@@ -25,6 +25,8 @@ Prepare the retail dataset for Double Machine Learning by defining the treatment
 - Unique dates: 731
 - Prepared dataset shape: (73100,14)
 
+## Findings
+[Summarize what the actual outputs show about data quality and within-pair price variation.]
 
 ## Limitations
 Price variation and observed associations do not establish causality. Potential confounders such as promotions, competitor prices, and demand shocks may be unavailable. The timing and validity of candidate controls, particularly inventory, must be assessed before causal estimation.
