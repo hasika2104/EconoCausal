@@ -1,0 +1,36 @@
+specification,coefficient_scenario,theta,pricing_scenario,candidate_price,baseline_units,estimated_demand,inventory_cap,inventory_constrained_demand,inventory_binding,estimated_revenue,revenue_change_dollars,revenue_change_pct,rank_in_scenario,extrapolates
+Spec 1 (Core),Point Estimate,0.010699,-10%,49.62,173.0,172.94,195.0,172.94,False,8581.28,-956.21,-10.03,5,False
+Spec 1 (Core),Point Estimate,0.010699,-5%,52.37,173.0,172.97,195.0,172.97,False,9058.44,-479.05,-5.02,4,False
+Spec 1 (Core),Point Estimate,0.010699,+0%,55.13,173.0,173.0,195.0,173.0,False,9537.49,0.0,0.0,3,False
+Spec 1 (Core),Point Estimate,0.010699,+5%,57.89,173.0,173.03,195.0,173.03,False,10016.71,479.22,5.02,2,False
+Spec 1 (Core),Point Estimate,0.010699,+10%,60.64,173.0,173.06,195.0,173.06,False,10494.36,956.87,10.03,1,False
+Spec 1 (Core),CI Lower 95%,-0.019671,-10%,49.62,173.0,173.11,195.0,173.11,False,8589.72,-947.77,-9.94,5,False
+Spec 1 (Core),CI Lower 95%,-0.019671,-5%,52.37,173.0,173.05,195.0,173.05,False,9062.63,-474.86,-4.98,4,False
+Spec 1 (Core),CI Lower 95%,-0.019671,+0%,55.13,173.0,173.0,195.0,173.0,False,9537.49,0.0,0.0,3,False
+Spec 1 (Core),CI Lower 95%,-0.019671,+5%,57.89,173.0,172.95,195.0,172.95,False,10012.08,474.59,4.98,2,False
+Spec 1 (Core),CI Lower 95%,-0.019671,+10%,60.64,173.0,172.89,195.0,172.89,False,10484.05,946.56,9.92,1,False
+Spec 1 (Core),CI Upper 95%,0.041069,-10%,49.62,173.0,172.77,195.0,172.77,False,8572.85,-964.64,-10.11,5,False
+Spec 1 (Core),CI Upper 95%,0.041069,-5%,52.37,173.0,172.89,195.0,172.89,False,9054.25,-483.24,-5.07,4,False
+Spec 1 (Core),CI Upper 95%,0.041069,+0%,55.13,173.0,173.0,195.0,173.0,False,9537.49,0.0,0.0,3,False
+Spec 1 (Core),CI Upper 95%,0.041069,+5%,57.89,173.0,173.11,195.0,173.11,False,10021.34,483.85,5.07,2,False
+Spec 1 (Core),CI Upper 95%,0.041069,+10%,60.64,173.0,173.23,195.0,173.23,False,10504.67,967.18,10.14,1,False
+Spec 2 (+Inventory),Point Estimate,-0.019468,-10%,49.62,173.0,173.11,195.0,173.11,False,8589.72,-947.77,-9.94,5,False
+Spec 2 (+Inventory),Point Estimate,-0.019468,-5%,52.37,173.0,173.05,195.0,173.05,False,9062.63,-474.86,-4.98,4,False
+Spec 2 (+Inventory),Point Estimate,-0.019468,+0%,55.13,173.0,173.0,195.0,173.0,False,9537.49,0.0,0.0,3,False
+Spec 2 (+Inventory),Point Estimate,-0.019468,+5%,57.89,173.0,172.95,195.0,172.95,False,10012.08,474.59,4.98,2,False
+Spec 2 (+Inventory),Point Estimate,-0.019468,+10%,60.64,173.0,172.89,195.0,172.89,False,10484.05,946.56,9.92,1,False
+Spec 2 (+Inventory),CI Lower 95%,-0.043963,-10%,49.62,173.0,173.24,195.0,173.24,False,8596.17,-941.32,-9.87,5,False
+Spec 2 (+Inventory),CI Lower 95%,-0.043963,-5%,52.37,173.0,173.12,195.0,173.12,False,9066.29,-471.2,-4.94,4,False
+Spec 2 (+Inventory),CI Lower 95%,-0.043963,+0%,55.13,173.0,173.0,195.0,173.0,False,9537.49,0.0,0.0,3,False
+Spec 2 (+Inventory),CI Lower 95%,-0.043963,+5%,57.89,173.0,172.88,195.0,172.88,False,10008.02,470.53,4.93,2,False
+Spec 2 (+Inventory),CI Lower 95%,-0.043963,+10%,60.64,173.0,172.76,195.0,172.76,False,10476.17,938.68,9.84,1,False
+Spec 2 (+Inventory),CI Upper 95%,0.005027,-10%,49.62,173.0,172.97,195.0,172.97,False,8582.77,-954.72,-10.01,5,False
+Spec 2 (+Inventory),CI Upper 95%,0.005027,-5%,52.37,173.0,172.99,195.0,172.99,False,9059.49,-478.0,-5.01,4,False
+Spec 2 (+Inventory),CI Upper 95%,0.005027,+0%,55.13,173.0,173.0,195.0,173.0,False,9537.49,0.0,0.0,3,False
+Spec 2 (+Inventory),CI Upper 95%,0.005027,+5%,57.89,173.0,173.01,195.0,173.01,False,10015.55,478.06,5.01,2,False
+Spec 2 (+Inventory),CI Upper 95%,0.005027,+10%,60.64,173.0,173.03,195.0,173.03,False,10492.54,955.05,10.01,1,False
+Stress-Test (Elastic),Breakeven Threshold,-2.852761,-10%,49.62,173.0,188.72,195.0,188.72,False,9364.29,-173.2,-1.82,5,False
+Stress-Test (Elastic),Breakeven Threshold,-2.852761,-5%,52.37,173.0,180.87,195.0,180.87,False,9472.16,-65.33,-0.68,4,False
+Stress-Test (Elastic),Breakeven Threshold,-2.852761,+0%,55.13,173.0,173.0,195.0,173.0,False,9537.49,0.0,0.0,2,False
+Stress-Test (Elastic),Breakeven Threshold,-2.852761,+5%,57.89,173.0,165.13,195.0,165.13,False,9559.38,21.89,0.23,1,False
+Stress-Test (Elastic),Breakeven Threshold,-2.852761,+10%,60.64,173.0,157.28,195.0,157.28,False,9537.46,-0.03,-0.0,3,False
