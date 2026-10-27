@@ -2,5 +2,5 @@
 __pycache__/
 .ipynb_checkpoints/
 .env
-.DS_Storemodels/
+.DS_Store
 models/
