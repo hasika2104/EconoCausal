@@ -1,0 +1,5 @@
+model_name,model_type,train_samples,test_samples,mae,mse,rmse,r2_score,mean_residual_bias,notes
+Mean Baseline (Dummy),Heuristic,58480,14620,88.8081,11716.1683,108.2413,-0.0,-0.7371,Predicts training mean units sold
+Random Forest (Baseline),Ensemble (Bagging),58480,14620,69.5051,7985.2436,89.3602,0.3184,-1.3614,"Day 5 saved baseline: 100 trees, default depth"
+HistGradientBoosting (Alternative 1),Ensemble (Boosting),58480,14620,68.675,7710.186,87.8077,0.3419,-0.3451,"100 boosting iterations, histogram binning"
+RidgeCV (Alternative 2),Linear Regularized,58480,14620,68.6478,7682.4166,87.6494,0.3443,-0.1614,L2 regularized linear model with CV alpha tuning

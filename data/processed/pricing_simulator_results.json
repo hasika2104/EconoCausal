@@ -1,0 +1,76 @@
+{
+  "product_id": "P0001",
+  "store_id": "S001",
+  "baseline_price": 55.13,
+  "baseline_units": 173.0,
+  "baseline_revenue": 9537.49,
+  "baseline_inventory": 195.0,
+  "dml_theta": 0.010698790902889818,
+  "dml_ci_low": -0.019671462460535295,
+  "dml_ci_high": 0.04106904426631493,
+  "dml_p_value": 0.48990910213657757,
+  "price_obs_min": 10.26,
+  "price_obs_max": 99.97,
+  "scenarios": [
+    {
+      "Scenario": "-10%",
+      "Price ($)": 49.62,
+      "Price Change ($)": -5.51,
+      "Est Units Sold": 172.94,
+      "Est Units (CI low)": 172.77,
+      "Est Units (CI high)": 173.11,
+      "Est Revenue ($)": 8580.81,
+      "Rev Change ($)": -956.68,
+      "Rev Change (%)": -10.03,
+      "Extrapolates": false
+    },
+    {
+      "Scenario": "-5%",
+      "Price ($)": 52.37,
+      "Price Change ($)": -2.76,
+      "Est Units Sold": 172.97,
+      "Est Units (CI low)": 172.89,
+      "Est Units (CI high)": 173.05,
+      "Est Revenue ($)": 9059.07,
+      "Rev Change ($)": -478.42,
+      "Rev Change (%)": -5.02,
+      "Extrapolates": false
+    },
+    {
+      "Scenario": "+0%",
+      "Price ($)": 55.13,
+      "Price Change ($)": 0.0,
+      "Est Units Sold": 173.0,
+      "Est Units (CI low)": 173.0,
+      "Est Units (CI high)": 173.0,
+      "Est Revenue ($)": 9537.49,
+      "Rev Change ($)": 0.0,
+      "Rev Change (%)": 0.0,
+      "Extrapolates": false
+    },
+    {
+      "Scenario": "+5%",
+      "Price ($)": 57.89,
+      "Price Change ($)": 2.76,
+      "Est Units Sold": 173.03,
+      "Est Units (CI low)": 172.95,
+      "Est Units (CI high)": 173.11,
+      "Est Revenue ($)": 10016.07,
+      "Rev Change ($)": 478.58,
+      "Rev Change (%)": 5.02,
+      "Extrapolates": false
+    },
+    {
+      "Scenario": "+10%",
+      "Price ($)": 60.64,
+      "Price Change ($)": 5.51,
+      "Est Units Sold": 173.06,
+      "Est Units (CI low)": 172.89,
+      "Est Units (CI high)": 173.23,
+      "Est Revenue ($)": 10494.82,
+      "Rev Change ($)": 957.33,
+      "Rev Change (%)": 10.04,
+      "Extrapolates": false
+    }
+  ]
+}

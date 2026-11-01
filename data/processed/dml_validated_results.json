@@ -1,0 +1,41 @@
+{
+  "spec1": {
+    "theta": 0.010698790902889818,
+    "ci_low": -0.019671462460535295,
+    "ci_high": 0.04106904426631493,
+    "std_err": 0.015495311956230726,
+    "p_value": 0.48990910213657757,
+    "n_obs": 73100,
+    "t_res_std": 26.374327969251556,
+    "controls": [
+      "Product ID",
+      "Store ID",
+      "Category",
+      "Region",
+      "Year",
+      "Month",
+      "DayOfWeek"
+    ]
+  },
+  "spec2": {
+    "theta": -0.01946812241439891,
+    "ci_low": -0.043963267495602004,
+    "ci_high": 0.005027022666804191,
+    "std_err": 0.012497752649751566,
+    "p_value": 0.11929730032847857,
+    "n_obs": 73100,
+    "t_res_std": 26.27760110137302,
+    "controls": [
+      "Product ID",
+      "Store ID",
+      "Category",
+      "Region",
+      "Year",
+      "Month",
+      "DayOfWeek",
+      "Inventory Level"
+    ]
+  },
+  "validated": true,
+  "note": "Spec 1 is the primary estimate. Spec 2 is a sensitivity check only. HC3 standard errors. 3-fold cross-fitting with ExtraTreesRegressor. Results are observational, not necessarily causal."
+}

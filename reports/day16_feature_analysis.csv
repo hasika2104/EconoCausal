@@ -1,0 +1,10 @@
+feature,feature_type,rf_mdi_importance,rf_perm_importance_mean,rf_perm_importance_std,predictive_rank,causal_role_and_distinction
+Inventory Level,Numerical,0.4402,0.7118,0.0106,1,High predictive signal (0.712 test R2 drop). Operates as an upper bound / stocking reflection of demand; adjusting stock does not generate organic customer demand (collider / capacity proxy).
+Price,Numerical,0.1495,0.0029,0.002,2,"Moderate MDI (14.9%) but near-zero test permutation importance (0.0029). DML causal estimate proves negligible treatment effect (theta = +0.0107, p=0.490). True causal policy lever."
+Category,Categorical,0.0522,0.0019,0.0007,3,Low predictive importance (0.0019 test R2 drop). Baseline product classification; captured primarily through individual product-level fixed effects.
+Month,Numerical,0.0615,0.0015,0.0007,4,Low predictive importance (0.0015 test R2 drop). Captures slight seasonal macroeconomic variations across calendar cycles.
+Product ID,Categorical,0.138,0.0007,0.001,5,Marginal predictive importance (0.0007 test R2 drop). Controls for baseline brand-level and product-specific mean velocity.
+DayOfWeek,Numerical,0.0494,0.0006,0.001,6,Marginal predictive importance (0.0006 test R2 drop). Reflects intra-week retail shopping cycle differences (weekend vs weekday).
+Year,Numerical,0.0135,0.0,0.0,7,Zero predictive importance (0.0000 test R2 drop). Single constant year in test split (2023-2024 boundary) offering zero marginal variance in holdout.
+Region,Categorical,0.043,-0.0003,0.0009,8,Zero/negative predictive importance (-0.0003 test R2 drop). Geographic retail clusters exhibit near-identical demand distribution.
+Store ID,Categorical,0.0527,-0.0018,0.0017,9,Zero/negative predictive importance (-0.0018 test R2 drop). Individual store fixed effects show slight overfitting across holdout evaluation.
