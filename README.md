@@ -68,35 +68,56 @@ The dataset will be inspected and validated before model development. Missing bu
 - [x] Initial problem statement defined.
 - [x] Initial dataset selected.
 - [x] Project scope and planned features documented.
-- [ ] Dataset validation and preprocessing.
-- [ ] Exploratory data analysis.
-- [ ] Baseline demand model.
-- [ ] DML model and diagnostics.
-- [ ] Pricing simulator.
-- [ ] Dashboard and evaluation.
-- [ ] Final report and presentation.
+- [x] Dataset validation and preprocessing (Days 1–4).
+- [x] Exploratory data analysis and temporal auditing (Days 1–4).
+- [x] Baseline demand prediction models (Days 5, 16).
+- [x] Causal DAG formulation & confounder isolation (Days 6–7).
+- [x] Double Machine Learning (DML) model and HC3 diagnostics (Days 8–10).
+- [x] Causal uncertainty propagation & sensitivity analysis (Days 11–13).
+- [x] 18-specification model robustness analysis (Days 14–15).
+- [x] Multi-model holdout benchmarking & feature diagnostics (Day 16).
+- [x] Improved constrained pricing decision engine (Day 17).
+- [x] Project integration, reproducibility & final report (Day 18).
+- [x] Interactive Pricing Analytics Dashboard (`app.py`) (Day 19).
 
 ## 8. Important Limitations
 
 Causal estimates depend on the quality of the data, the availability of relevant control variables, and the assumptions required for causal identification. Predictive accuracy alone does not establish that a price change causes a change in demand.
 
-Pricing recommendations will be treated as estimates for decision support rather than guaranteed optimal prices.
+Pricing recommendations will be treated as estimates for decision support rather than guaranteed optimal prices. Furthermore, gross revenue ($P \cdot Q$) is not operating profit; wholesale procurement costs (COGS) are absent from the dataset.
 
 ## 9. Project Structure
 
 ```text
 EconoCausal/
+├── app.py                     # Streamlit interactive pricing analytics dashboard
+├── daily-logs/                # Daily engineering logs (Day 1 to Day 19)
 ├── data/
-├── notebooks/
-├── src/
-├── daily-logs/
-├── report/
-├── app.py
-├── requirements.txt
-├── README.md
-└── .gitignore
+│   ├── processed/             # Cleaned datasets and JSON model outputs
+│   └── retail_store_inventory-selected-columns.csv
+├── models/                    # Serialized baseline models (gitignored)
+├── notebooks/                 # 13 chronologically sequenced Jupyter notebooks
+├── reports/                   # Technical summaries, robustness audits, final report
+├── src/                       # Reusable validation and business logic modules
+├── requirements.txt           # Project environment dependencies
+├── README.md                  # Project overview and instructions
+└── .gitignore                 # Security and artifact exclusions
 ```
 
-## 10. Development Plan
+## 10. Running the Interactive Dashboard
 
-The project will be developed incrementally, with daily progress logs, version-controlled code, testing, documentation, and final evaluation.
+To launch the interactive pricing analytics dashboard:
+
+```bash
+# 1. Activate the Python virtual environment
+source .venv/bin/activate
+
+# 2. Run the Streamlit application
+streamlit run app.py
+```
+
+The dashboard will open automatically in your browser at `http://localhost:8501`.
+
+## 11. Development Plan
+
+The project was developed incrementally across a 19-day research and implementation sprint, with daily progress logs, version-controlled code, rigorous testing, econometric validation, and institutional documentation.
