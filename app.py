@@ -7,7 +7,7 @@ Double Machine Learning (DML) causal inference, predictive model benchmarks,
 
 Author: Data Analyst Intern at Infotact Solutions
 Repository: https://github.com/hasika2104/EconoCausal
-Version: Day 20 Production Integration
+Version: Day 21 Product-Level AI Integration
 """
 
 from pathlib import Path
@@ -163,6 +163,8 @@ FEATURE_ANALYSIS_PATH = BASE_DIR / "reports" / "day16_feature_analysis.csv"
 ROBUSTNESS_PATH = BASE_DIR / "reports" / "day15_robustness_results.csv"
 SENSITIVITY_PATH = BASE_DIR / "reports" / "day13_sensitivity_results.csv"
 PRICING_SCENARIOS_PATH = BASE_DIR / "reports" / "day17_pricing_scenarios.csv"
+PRODUCT_ANALYSIS_PATH = BASE_DIR / "reports" / "day21_product_pricing_analysis.csv"
+PRODUCT_REC_PATH = BASE_DIR / "reports" / "day21_ai_pricing_recommendations.csv"
 
 
 @st.cache_data(show_spinner=False)
@@ -262,6 +264,22 @@ def load_pricing_scenarios():
     return pd.read_csv(PRICING_SCENARIOS_PATH)
 
 
+@st.cache_data(show_spinner=False)
+def load_product_analysis():
+    """Load Day 21 product-level pricing analysis table."""
+    if not PRODUCT_ANALYSIS_PATH.exists():
+        return None
+    return pd.read_csv(PRODUCT_ANALYSIS_PATH)
+
+
+@st.cache_data(show_spinner=False)
+def load_product_recommendations():
+    """Load Day 21 product-level AI pricing recommendations register."""
+    if not PRODUCT_REC_PATH.exists():
+        return None
+    return pd.read_csv(PRODUCT_REC_PATH)
+
+
 # Load all data assets
 df_raw = load_raw_data()
 df_retail = load_retail_data()
@@ -274,6 +292,8 @@ df_features = load_feature_analysis()
 df_robustness = load_robustness_results()
 df_sensitivity = load_sensitivity_results()
 df_scenarios = load_pricing_scenarios()
+df_prod_analysis = load_product_analysis()
+df_prod_rec = load_product_recommendations()
 
 # -----------------------------------------------------------------------------
 # 3. Sidebar Navigation & Global Filters
@@ -301,6 +321,7 @@ sections = [
     "🎛️ 9. Dynamic Pricing Simulator",
     "💡 10. Pricing Recommendations",
     "⚠️ 11. Business Insights and Limitations",
+    "🎯 12. Product-Level AI Pricing Recommendations",
 ]
 
 selected_section = st.sidebar.radio("Navigation", sections, index=0)
@@ -470,6 +491,8 @@ if selected_section == "📌 1. Project Overview":
         ("18-Specification Robustness", ROBUSTNESS_PATH, df_robustness is not None, "18 sensitivity checks"),
         ("Breakeven Stress Testing", SENSITIVITY_PATH, df_sensitivity is not None, "Elastic threshold analysis"),
         ("Multi-Product Pricing Scenarios", PRICING_SCENARIOS_PATH, df_scenarios is not None, "30 discrete evaluations"),
+        ("Product Pricing Analysis (Day 21)", PRODUCT_ANALYSIS_PATH, df_prod_analysis is not None, "100 SKU segments analyzed"),
+        ("AI Pricing Recommendations (Day 21)", PRODUCT_REC_PATH, df_prod_rec is not None, "100 actionable SKU recommendations"),
     ]
 
     art_cols = st.columns(3)
@@ -1783,6 +1806,356 @@ elif selected_section == "⚠️ 11. Business Insights and Limitations":
         st.dataframe(pd.DataFrame(readiness_data), use_container_width=True, hide_index=True)
 
 
+
+
+# =============================================================================
+# SECTION 12: PRODUCT-LEVEL AI PRICING RECOMMENDATIONS
+# =============================================================================
+elif selected_section == "🎯 12. Product-Level AI Pricing Recommendations":
+    st.header("🎯 Product-Level AI Pricing Recommendations")
+    st.markdown(
+        """
+        Granular, SKU-by-SKU pricing recommendations synthesizing Double Machine Learning (DML) 
+        causal price elasticity, supervised demand forecasts, physical inventory constraints, 
+        and estimation uncertainty across all 20 catalog products and 5 merchandise categories (100 operational segments).
+        """
+    )
+
+    if df_prod_rec is None or df_prod_analysis is None:
+        st.error(
+            "Product-level analysis or recommendations file not found. "
+            "Please ensure `reports/day21_product_pricing_analysis.csv` and "
+            "`reports/day21_ai_pricing_recommendations.csv` exist."
+        )
+    else:
+        # High-level Summary Metric KPIs
+        total_skus = len(df_prod_rec)
+        inc_count = int((df_prod_rec['recommendation_strategy'] == 'Consider a price increase').sum())
+        dec_count = int((df_prod_rec['recommendation_strategy'] == 'Consider a price decrease').sum())
+        inv_count = int((df_prod_rec['recommendation_strategy'] == 'Review inventory before changing the price').sum())
+        data_count = int((df_prod_rec['recommendation_strategy'] == 'Collect more data before making a recommendation').sum())
+        maint_count = int((df_prod_rec['recommendation_strategy'] == 'Maintain the current price').sum())
+
+        kpi_c1, kpi_c2, kpi_c3, kpi_c4, kpi_c5, kpi_c6 = st.columns(6)
+        kpi_c1.metric("SKU Segments", f"{total_skus}")
+        kpi_c2.metric("Price Increase", f"{inc_count}", "+5% Micro-Pilot", delta_color="normal")
+        kpi_c3.metric("Price Decrease", f"{dec_count}", "-5% Clearance", delta_color="inverse")
+        kpi_c4.metric("Supply Review", f"{inv_count}", "Stock Constrained", delta_color="off")
+        kpi_c5.metric("A/B Pilot Needed", f"{data_count}", "High Uncertainty", delta_color="off")
+        kpi_c6.metric("Maintain Price", f"{maint_count}", "Status Quo", delta_color="off")
+
+        st.markdown("---")
+
+        # Interactive Global Filters for Section 12
+        st.subheader("🎛️ Product & Recommendation Filters")
+        f_col1, f_col2, f_col3 = st.columns(3)
+        with f_col1:
+            all_categories = sorted(df_prod_rec['category'].unique())
+            sel_cats = st.multiselect("Select Categories", all_categories, default=all_categories)
+        with f_col2:
+            all_strategies = sorted(df_prod_rec['recommendation_strategy'].unique())
+            sel_strats = st.multiselect("Select Recommendation Strategies", all_strategies, default=all_strategies)
+        with f_col3:
+            all_pids = sorted(df_prod_rec['product_id'].unique())
+            sel_pids = st.multiselect("Select Product IDs", all_pids, default=all_pids)
+
+        # Apply Filters
+        filtered_rec = df_prod_rec[
+            (df_prod_rec['category'].isin(sel_cats)) &
+            (df_prod_rec['recommendation_strategy'].isin(sel_strats)) &
+            (df_prod_rec['product_id'].isin(sel_pids))
+        ].copy()
+
+        st.caption(f"Displaying **{len(filtered_rec)}** of {len(df_prod_rec)} product segments matching filters.")
+
+        # Tabs for Section 12
+        tab_reg, tab_viz, tab_exp, tab_gov = st.tabs([
+            "📋 Recommendation Register & Comparison Table",
+            "📊 Pricing & Revenue Visualizations",
+            "🔍 SKU Detailed Rationale Explorer",
+            "🛡️ Strategic Governance & Risk Audit"
+        ])
+
+        with tab_reg:
+            st.subheader("Granular SKU Pricing Recommendations & Impact Register")
+            st.markdown(
+                """
+                Comparison table evaluating current vs. suggested retail prices, expected daily unit demand, 
+                realized sales (physically bounded by on-hand inventory), projected revenue changes, and statistical confidence.
+                """
+            )
+
+            # Format comparison table for display
+            display_cols = [
+                'product_id', 'category', 'recommendation_strategy', 'current_price', 'suggested_price',
+                'price_change_pct', 'baseline_units_sold', 'expected_demand_change_units', 'expected_demand',
+                'realized_sales_capped', 'expected_revenue_change_dollars', 'expected_revenue_change_pct',
+                'inventory_buffer_ratio', 'inventory_binding_rate_pct'
+            ]
+            
+            rename_map = {
+                'product_id': 'Product ID',
+                'category': 'Category',
+                'recommendation_strategy': 'Strategy',
+                'current_price': 'Current Price ($)',
+                'suggested_price': 'Suggested Price ($)',
+                'price_change_pct': 'Price Delta (%)',
+                'baseline_units_sold': 'Base Units/Day',
+                'expected_demand_change_units': 'Demand Delta',
+                'expected_demand': 'Est. Demand',
+                'realized_sales_capped': 'Realized Sales',
+                'expected_revenue_change_dollars': 'Revenue Delta ($)',
+                'expected_revenue_change_pct': 'Revenue Delta (%)',
+                'inventory_buffer_ratio': 'Inventory Buffer',
+                'inventory_binding_rate_pct': 'Binding Rate (%)'
+            }
+
+            table_df = filtered_rec[display_cols].rename(columns=rename_map)
+            st.dataframe(
+                table_df.style.format({
+                    'Current Price ($)': '${:.2f}',
+                    'Suggested Price ($)': '${:.2f}',
+                    'Price Delta (%)': '{:+.1f}%',
+                    'Base Units/Day': '{:.1f}',
+                    'Demand Delta': '{:+.2f}',
+                    'Est. Demand': '{:.1f}',
+                    'Realized Sales': '{:.1f}',
+                    'Revenue Delta ($)': '${:+.2f}',
+                    'Revenue Delta (%)': '{:+.2f}%',
+                    'Inventory Buffer': '{:.2f}x',
+                    'Binding Rate (%)': '{:.2f}%'
+                }),
+                use_container_width=True,
+                height=420
+            )
+
+            # Download CSV Button
+            csv_data = filtered_rec.to_csv(index=False).encode('utf-8')
+            st.download_button(
+                label="📥 Download Filtered Recommendations (CSV)",
+                data=csv_data,
+                file_name="econocausal_filtered_recommendations.csv",
+                mime="text/csv"
+            )
+
+            # Inventory Warning Box for Supply-Constrained Items
+            constrained_items = filtered_rec[filtered_rec['inventory_binding_rate_pct'] >= 0.75]
+            if len(constrained_items) > 0:
+                st.markdown(
+                    f"""
+                    <div class="warning-box">
+                        <b>⚠️ Operational Inventory Warning ({len(constrained_items)} SKUs):</b><br>
+                        The following items have peak demand frequently restricted by on-hand inventory (binding rate &ge; 0.75%). 
+                        <b>Repricing algorithms have been locked</b> because price changes cannot expand physical sales volume without upstream inventory replenishment:
+                        <br>• {', '.join([f"{r['product_id']} ({r['category']}: {r['inventory_binding_rate_pct']:.1f}% binding)" for _, r in constrained_items.head(8).iterrows()])}
+                    </div>
+                    """,
+                    unsafe_allow_html=True
+                )
+
+        with tab_viz:
+            st.subheader("Visual Analytics: Pricing, Inventory Buffer & Revenue Distribution")
+            
+            v_col1, v_col2 = st.columns(2)
+            with v_col1:
+                # Plot 1: Current vs Suggested Price
+                price_fig = px.bar(
+                    filtered_rec.head(20),
+                    x='product_id',
+                    y=['current_price', 'suggested_price'],
+                    barmode='group',
+                    color_discrete_sequence=['#2e7d32', '#81c784'],
+                    title="Current vs. Suggested Retail Price (Top 20 Filtered SKUs)",
+                    labels={'value': 'Price ($)', 'product_id': 'Product ID', 'variable': 'Price Type'},
+                    height=360
+                )
+                price_fig.update_layout(template="plotly_white", margin=dict(l=20, r=20, t=40, b=20), legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1))
+                st.plotly_chart(price_fig, use_container_width=True)
+
+            with v_col2:
+                # Plot 2: Recommendation Strategy Distribution Donut
+                strat_fig = px.pie(
+                    filtered_rec,
+                    names='recommendation_strategy',
+                    title=f"Recommendation Strategy Distribution ({len(filtered_rec)} SKUs)",
+                    color='recommendation_strategy',
+                    color_discrete_map={
+                        'Consider a price increase': '#2e7d32',
+                        'Consider a price decrease': '#f57f17',
+                        'Maintain the current price': '#1976d2',
+                        'Review inventory before changing the price': '#d32f2f',
+                        'Collect more data before making a recommendation': '#7b1fa2'
+                    },
+                    hole=0.45,
+                    height=360
+                )
+                strat_fig.update_layout(template="plotly_white", margin=dict(l=20, r=20, t=40, b=20), legend=dict(orientation="v", yanchor="middle", y=0.5))
+                st.plotly_chart(strat_fig, use_container_width=True)
+
+            v_col3, v_col4 = st.columns(2)
+            with v_col3:
+                # Plot 3: Demand Velocity vs Inventory Buffer Ratio
+                scatter_fig = px.scatter(
+                    filtered_rec,
+                    x='baseline_units_sold',
+                    y='inventory_buffer_ratio',
+                    color='recommendation_strategy',
+                    size='current_price',
+                    hover_data=['product_id', 'category', 'inventory_binding_rate_pct'],
+                    title="Product Sales Velocity vs. Inventory Buffer Ratio",
+                    labels={'baseline_units_sold': 'Daily Units Sold', 'inventory_buffer_ratio': 'Inventory Buffer (Inv / Units)'},
+                    color_discrete_map={
+                        'Consider a price increase': '#2e7d32',
+                        'Consider a price decrease': '#f57f17',
+                        'Maintain the current price': '#1976d2',
+                        'Review inventory before changing the price': '#d32f2f',
+                        'Collect more data before making a recommendation': '#7b1fa2'
+                    },
+                    height=380
+                )
+                scatter_fig.add_hline(y=1.95, line_dash="dash", line_color="gray", annotation_text="Buffer Threshold (1.95x)")
+                scatter_fig.add_vline(x=138.0, line_dash="dot", line_color="green", annotation_text="High Demand (138)")
+                scatter_fig.update_layout(template="plotly_white", margin=dict(l=20, r=20, t=40, b=20), legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1))
+                st.plotly_chart(scatter_fig, use_container_width=True)
+
+            with v_col4:
+                # Plot 4: Expected Revenue Change by Strategy
+                rev_fig = px.bar(
+                    filtered_rec,
+                    x='product_id',
+                    y='expected_revenue_change_dollars',
+                    color='recommendation_strategy',
+                    title="Projected Daily Revenue Delta ($) by SKU",
+                    labels={'expected_revenue_change_dollars': 'Daily Revenue Change ($)', 'product_id': 'Product ID'},
+                    color_discrete_map={
+                        'Consider a price increase': '#2e7d32',
+                        'Consider a price decrease': '#f57f17',
+                        'Maintain the current price': '#1976d2',
+                        'Review inventory before changing the price': '#d32f2f',
+                        'Collect more data before making a recommendation': '#7b1fa2'
+                    },
+                    height=380
+                )
+                rev_fig.add_hline(y=0, line_color="black", line_width=1)
+                rev_fig.update_layout(template="plotly_white", margin=dict(l=20, r=20, t=40, b=20), legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1))
+                st.plotly_chart(rev_fig, use_container_width=True)
+
+        with tab_exp:
+            st.subheader("🔍 SKU Detailed Rationale Explorer")
+            st.markdown("Select any specific SKU segment to inspect the transparent econometric and operational rationale behind the recommendation.")
+
+            s_col1, s_col2 = st.columns(2)
+            with s_col1:
+                selected_prod_id = st.selectbox("Select Product ID", all_pids, index=0)
+            with s_col2:
+                available_cats = sorted(df_prod_rec[df_prod_rec['product_id'] == selected_prod_id]['category'].unique())
+                selected_cat = st.selectbox("Select Category", available_cats, index=0)
+
+            # Retrieve selected record
+            sku_match = df_prod_rec[(df_prod_rec['product_id'] == selected_prod_id) & (df_prod_rec['category'] == selected_cat)]
+            if len(sku_match) > 0:
+                sku = sku_match.iloc[0]
+
+                # Card Header with Strategy Badge
+                strat = sku['recommendation_strategy']
+                if strat == 'Consider a price increase':
+                    badge_style = "background-color: #e8f5e9; color: #1b5e20; border: 1px solid #a5d6a7;"
+                elif strat == 'Consider a price decrease':
+                    badge_style = "background-color: #fff3e0; color: #e65100; border: 1px solid #ffcc80;"
+                elif strat == 'Review inventory before changing the price':
+                    badge_style = "background-color: #ffebee; color: #b71c1c; border: 1px solid #ef9a9a;"
+                elif strat == 'Collect more data before making a recommendation':
+                    badge_style = "background-color: #f3e5f5; color: #4a148c; border: 1px solid #ce93d8;"
+                else:
+                    badge_style = "background-color: #e3f2fd; color: #0d47a1; border: 1px solid #90caf9;"
+
+                st.markdown(
+                    f"""
+                    <div style="padding: 16px; border-radius: 8px; margin-bottom: 16px; {badge_style}">
+                        <div style="font-size: 0.85rem; text-transform: uppercase; font-weight: bold; letter-spacing: 0.5px;">Recommended Strategy</div>
+                        <div style="font-size: 1.6rem; font-weight: bold; margin: 4px 0;">{strat}</div>
+                        <div style="font-size: 0.95rem;">SKU: <b>{sku['product_id']}</b> &nbsp;|&nbsp; Category: <b>{sku['category']}</b></div>
+                    </div>
+                    """,
+                    unsafe_allow_html=True
+                )
+
+                # Key Metric Columns
+                m1, m2, m3, m4 = st.columns(4)
+                m1.metric("Current Price", f"${sku['current_price']:.2f}")
+                m2.metric("Suggested Price", f"${sku['suggested_price']:.2f}", f"{sku['price_change_pct']:+.1f}%")
+                m3.metric("Expected Daily Demand", f"{sku['expected_demand']:.1f} units", f"{sku['expected_demand_change_units']:+.2f} units")
+                m4.metric("Modeled Daily Revenue", f"${sku['expected_revenue']:,.2f}", f"${sku['expected_revenue_change_dollars']:+,.2f}")
+
+                st.markdown("#### 📝 Comprehensive Recommendation Rationale")
+                st.info(sku['recommendation_explanation'])
+
+                r_col1, r_col2 = st.columns(2)
+                with r_col1:
+                    st.markdown("##### 📦 Physical Inventory Context")
+                    st.markdown(f"- **Inventory Buffer Ratio:** `{sku['inventory_buffer_ratio']:.2f}x` average daily demand")
+                    st.markdown(f"- **Stockout / Binding Rate:** `{sku['inventory_binding_rate_pct']:.2f}%` of store-days")
+                    st.markdown(f"- **Operational Notes:** {sku['inventory_considerations']}")
+
+                with r_col2:
+                    st.markdown("##### 🔬 Causal Econometric Identification")
+                    st.markdown(f"- **Category DML theta (theta):** `{sku['dml_theta_used']:+.6f}` units per $1.00")
+                    st.markdown(f"- **Statistical p-value:** `{sku['dml_p_value']:.4f}` (Statistically insignificant at alpha=0.05)")
+                    st.markdown(f"- **Confidence Assessment:** {sku['confidence_and_uncertainty']}")
+
+        with tab_gov:
+            st.subheader("🛡️ Strategic Governance & Category Management Guardrails")
+            st.markdown(
+                """
+                Before deploying price modifications into automated Point-of-Sale (POS) or ERP systems, 
+                retail leadership must ensure compliance with analytical guardrails.
+                """
+            )
+
+            gov_c1, gov_c2 = st.columns(2)
+            with gov_c1:
+                st.markdown(
+                    """
+                    <div class="warning-box">
+                        <b>💰 The Missing Cost (COGS) Reminder:</b><br>
+                        The retail inventory dataset tracks selling <code>Price</code> and <code>Units Sold</code>, but contains 
+                        <b>no wholesale procurement costs or unit gross margins</b>.<br><br>
+                        Under inelastic demand (&theta; &approx; 0), simulated revenue increases with price hikes. 
+                        However, if a product operates on thin percentage margins, minor unobserved sales contractions can destroy net profit. 
+                        <b>Verify wholesale margin tables prior to repricing.</b>
+                    </div>
+                    """,
+                    unsafe_allow_html=True
+                )
+
+            with gov_c2:
+                st.markdown(
+                    """
+                    <div class="info-box">
+                        <b>🔍 Distinguishing Model Estimates from Realized Outcomes:</b><br>
+                        • <b>Predicted Baseline:</b> Modeled expected sales under historical status quo.<br>
+                        • <b>Counterfactual Demand:</b> Simulated response using DML coefficient (&theta; &times; &Delta;P).<br>
+                        • <b>Capped Realized Sales:</b> Hard physical boundary enforcing Sales &le; Inventory.<br>
+                        • <b>Real-World Execution:</b> Always test price changes in matched-pair micro-pilots (2 test stores vs. 2 control stores) for 30 days before full catalog deployment.
+                    </div>
+                    """,
+                    unsafe_allow_html=True
+                )
+
+            st.markdown("---")
+            st.markdown(
+                r"""
+                ### Operational Category Manager Action Matrix
+                | Strategy | Recommended Action | Risk Rating | Governance Gate |
+                | :--- | :--- | :---: | :--- |
+                | **Consider a price increase** | Launch a $+5\%$ micro-pilot across test stores | Moderate | Confirm gross unit margin $\ge 25\%$ and opening inventory $\ge 2.0\times$ |
+                | **Consider a price decrease** | Initiate $-5\%$ promotional clearance pilot | High | Pair with marketing banners; price drop alone does not lift volume |
+                | **Maintain current price** | Retain status quo; monitor competitors | Low | Standard operational cadence; no action required |
+                | **Review inventory** | Freeze repricing; audit warehouse reorder cycles | High | Unblock replenishment bottlenecks before repricing |
+                | **Collect more data** | Execute randomized A/B pricing trial | Moderate | Commission a 6-week multi-store randomized pricing trial |
+                """
+            )
+
 # -----------------------------------------------------------------------------
 # Footer
 # -----------------------------------------------------------------------------
@@ -1790,7 +2163,7 @@ st.markdown("---")
 st.markdown(
     """
     <div style="text-align: center; color: #888; font-size: 0.8rem; padding: 12px 0;">
-        EconoCausal Decision-Support Dashboard • Day 20 Production Integration • Infotact Solutions Internship • 2026
+        EconoCausal Decision-Support Dashboard • Day 21 Product-Level AI Integration • Infotact Solutions Internship • 2026
     </div>
     """,
     unsafe_allow_html=True,

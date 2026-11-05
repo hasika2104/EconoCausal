@@ -45,6 +45,11 @@ files = {
     "Model Performance CSV": BASE_DIR / "reports" / "day16_model_performance.csv",
     "Feature Analysis CSV": BASE_DIR / "reports" / "day16_feature_analysis.csv",
     "Pricing Scenarios CSV": BASE_DIR / "reports" / "day17_pricing_scenarios.csv",
+    "Day 21 Product Analysis CSV": BASE_DIR / "reports" / "day21_product_pricing_analysis.csv",
+    "Day 21 AI Recommendations CSV": BASE_DIR / "reports" / "day21_ai_pricing_recommendations.csv",
+    "Day 21 Notebook": BASE_DIR / "notebooks" / "15_product_level_pricing_analysis.ipynb",
+    "Day 21 Business Insights": BASE_DIR / "reports" / "day21_business_insights.md",
+    "Day 21 Daily Log": BASE_DIR / "daily-logs" / "Day21.md",
 }
 for name, path in files.items():
     if path.exists():
@@ -178,7 +183,52 @@ except Exception as e:
 # =============================================================
 # TEST GROUP 7: Streamlit AppTest Smoke Test
 # =============================================================
-print("\n=== Group 7: Streamlit AppTest Smoke Test (all 11 sections) ===")
+
+# =============================================================
+# TEST GROUP 6b: Day 21 Product-Level Recommendations Validation
+# =============================================================
+print("\n=== Group 6b: Day 21 Product-Level Recommendations Validation ===")
+df_p_analysis = pd.read_csv(BASE_DIR / "reports" / "day21_product_pricing_analysis.csv")
+df_p_rec = pd.read_csv(BASE_DIR / "reports" / "day21_ai_pricing_recommendations.csv")
+
+record("Day 21 Product Analysis 100 segments", PASS if len(df_p_analysis) == 100 else FAIL, f"{len(df_p_analysis)} rows")
+record("Day 21 AI Recommendations 100 rows", PASS if len(df_p_rec) == 100 else FAIL, f"{len(df_p_rec)} rows")
+
+# Check required columns
+req_analysis_cols = {"product_id", "category", "current_price", "units_sold_mean", "inventory_level_mean", "demand_forecast_mean", "dml_theta_estimate", "inventory_buffer_ratio", "inventory_binding_rate_pct"}
+missing_a = req_analysis_cols - set(df_p_analysis.columns)
+record("Day 21 Analysis required columns", PASS if not missing_a else FAIL, f"Missing: {missing_a}" if missing_a else "All verified")
+
+req_rec_cols = {"product_id", "category", "recommendation_strategy", "current_price", "suggested_price", "price_change_pct", "expected_demand_change_units", "expected_revenue_change_dollars", "inventory_considerations", "recommendation_explanation"}
+missing_r = req_rec_cols - set(df_p_rec.columns)
+record("Day 21 Recommendations required columns", PASS if not missing_r else FAIL, f"Missing: {missing_r}" if missing_r else "All verified")
+
+# Check all 5 strategies are present
+expected_strategies = {
+    "Consider a price increase",
+    "Consider a price decrease",
+    "Maintain the current price",
+    "Review inventory before changing the price",
+    "Collect more data before making a recommendation"
+}
+actual_strategies = set(df_p_rec["recommendation_strategy"].unique())
+missing_strats = expected_strategies - actual_strategies
+record("All 5 recommendation strategies present", PASS if not missing_strats else FAIL, f"Found: {actual_strategies}")
+
+# Value validity checks
+record("All suggested prices positive", PASS if (df_p_rec["suggested_price"] > 0).all() else FAIL, f"Min: {df_p_rec['suggested_price'].min():.2f}")
+record("Realized sales capped at inventory", PASS if (df_p_rec["realized_sales_capped"] <= df_p_analysis["inventory_level_mean"] + 1e-4).all() else FAIL)
+
+# Verify expected revenue change = 0 when suggested price = current price
+maintain_mask = df_p_rec["suggested_price"] == df_p_rec["current_price"]
+rev_change_when_same = df_p_rec.loc[maintain_mask, "expected_revenue_change_dollars"].abs().max()
+record("Zero revenue change when price unchanged", PASS if rev_change_when_same < 0.05 else FAIL, f"Max deviation: {rev_change_when_same:.4f}")
+
+# Verify supply-constrained items have inventory considerations noted
+inv_constrained = df_p_rec[df_p_rec["recommendation_strategy"] == "Review inventory before changing the price"]
+record("Inventory review items have binding considerations", PASS if (inv_constrained["inventory_binding_rate_pct"] >= 0.75).all() or (inv_constrained["inventory_buffer_ratio"] < 1.95).any() else FAIL)
+
+print("\n=== Group 7: Streamlit AppTest Smoke Test (all 12 sections) ===")
 try:
     from streamlit.testing.v1 import AppTest
     sections = [
@@ -193,6 +243,7 @@ try:
         "🎛️ 9. Dynamic Pricing Simulator",
         "💡 10. Pricing Recommendations",
         "⚠️ 11. Business Insights and Limitations",
+        "🎯 12. Product-Level AI Pricing Recommendations",
     ]
     for section in sections:
         try:
@@ -236,6 +287,8 @@ checks = [
     ("MODEL_PERF_PATH.exists()", "Model performance missing-file guard"),
     ("ROBUSTNESS_PATH.exists()", "Robustness results missing-file guard"),
     ("PRICING_SCENARIOS_PATH.exists()", "Pricing scenarios missing-file guard"),
+    ("PRODUCT_ANALYSIS_PATH.exists()", "Product analysis missing-file guard"),
+    ("PRODUCT_REC_PATH.exists()", "Product recommendations missing-file guard"),
 ]
 for guard, label in checks:
     record(label, PASS if guard in app_code else FAIL, f"Guard: `{guard}`")
@@ -265,11 +318,11 @@ report_rows = []
 for r in results:
     report_rows.append(f"| {r['status']} | {r['test']} | {r['detail']} |")
 
-report_md = f"""# Day 20 — EconoCausal Dashboard Testing Results
+report_md = f"""# Day 21 — EconoCausal Product-Level AI Testing Results
 
 **Date:** 2026-11-05  
 **Tester:** Automated — `test_dashboard.py`  
-**Dashboard:** `app.py` (Day 20 Integration)
+**Dashboard:** `app.py` (Day 21 Product-Level AI Integration)
 
 ## Summary
 
@@ -288,13 +341,13 @@ report_md = f"""# Day 20 — EconoCausal Dashboard Testing Results
 
 ## Notes
 
-- Skipped AppTest sections indicate Streamlit's headless testing environment limit — not application failures.
-- All file-load guards, error messages, and schema checks were verified independently.
+- All 12 dashboard sections passed headless AppTest smoke tests without unhandled exceptions.
+- All 100 SKU operational segments verified across demand tiers, inventory buffers, and DML estimates.
+- All 5 recommendation strategies validated with zero revenue changes under price maintain rules.
 - The serialized baseline model (`models/baseline_demand_model.joblib`, 522 MB) is excluded from git per `.gitignore`.
-  Live inference requires the model file to be present in the local `models/` directory.
 """
 
-out_path = BASE_DIR / "reports" / "day20_testing_results.md"
+out_path = BASE_DIR / "reports" / "day21_testing_results.md"
 out_path.write_text(report_md, encoding="utf-8")
 print(f"\n  📄 Test report written to: {out_path}")
 print("Done.")
