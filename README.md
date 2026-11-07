@@ -104,19 +104,42 @@ EconoCausal/
 └── .gitignore                 # Security and artifact exclusions
 ```
 
-## 10. Running the Interactive Dashboard
+## 10. Running the Applications
 
-To launch the interactive pricing analytics dashboard:
+### A. Professional Web Application (React + FastAPI + Tailwind CSS)
+
+To launch the full modern web application:
 
 ```bash
-# 1. Activate the Python virtual environment
-source .venv/bin/activate
+# Simply run the integrated launcher:
+./run_app.sh
+```
 
-# 2. Run the Streamlit application
+Or start the backend and frontend separately:
+
+```bash
+# 1. Start FastAPI backend (Port 8000)
+source .venv/bin/activate
+uvicorn backend.main:app --host 127.0.0.1 --port 8000 --reload
+
+# 2. In a second terminal, start React frontend (Port 5173)
+cd frontend
+npm run dev
+```
+
+* **Frontend URL:** [http://localhost:5173](http://localhost:5173)
+* **Backend API Documentation:** [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
+
+### B. Legacy Streamlit Dashboard
+
+To launch the earlier Streamlit dashboard:
+
+```bash
+source .venv/bin/activate
 streamlit run app.py
 ```
 
-The dashboard will open automatically in your browser at `http://localhost:8501`.
+The Streamlit dashboard runs at `http://localhost:8501`.
 
 ## 11. Development Plan
 

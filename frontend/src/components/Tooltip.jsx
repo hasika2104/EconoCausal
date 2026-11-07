@@ -1,0 +1,23 @@
+import React, { useState } from 'react';
+import { HelpCircle } from 'lucide-react';
+
+export default function Tooltip({ text, children, position = 'top' }) {
+  const [visible, setVisible] = useState(false);
+
+  return (
+    <span 
+      className="relative inline-flex items-center"
+      onMouseEnter={() => setVisible(true)}
+      onMouseLeave={() => setVisible(false)}
+    >
+      {children || <HelpCircle className="w-3.5 h-3.5 text-slate-400 hover:text-slate-600 cursor-help" />}
+      {visible && (
+        <span className={`absolute z-50 px-2.5 py-1.5 text-xs text-white bg-slate-900 rounded-lg shadow-lg whitespace-normal min-w-[180px] max-w-[280px] text-center pointer-events-none ${
+          position === 'top' ? 'bottom-full mb-1.5 left-1/2 -translate-x-1/2' : 'top-full mt-1.5 left-1/2 -translate-x-1/2'
+        }`}>
+          {text}
+        </span>
+      )}
+    </span>
+  );
+}
