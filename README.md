@@ -119,8 +119,8 @@ Or start the backend and frontend separately:
 
 ```bash
 # 1. Start FastAPI backend (Port 8000)
-source .venv/bin/activate
-uvicorn backend.main:app --host 127.0.0.1 --port 8000 --reload
+export PYTHONPATH=.
+.venv/bin/python -m uvicorn backend.main:app --host 127.0.0.1 --port 8000 --reload
 
 # 2. In a second terminal, start React frontend (Port 5173)
 cd frontend

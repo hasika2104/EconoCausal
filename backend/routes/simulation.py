@@ -102,6 +102,65 @@ def run_simulation(req: SimulationRequest):
     price_max_hist = 100.0
     extrapolates = proposed_price < price_min_hist or proposed_price > price_max_hist
 
+    # Baseline Model Pipeline Evaluation (Trained Random Forest Pipeline)
+    pipeline_eval = None
+    baseline_model = data_service.get_baseline_model()
+    if baseline_model is not None:
+        try:
+            # Prepare feature records for baseline and proposed scenarios
+            store_id = prod_rows["Store ID"].iloc[0] if not prod_rows.empty and "Store ID" in prod_rows.columns else "S0001"
+            region = prod_rows["Region"].iloc[0] if not prod_rows.empty and "Region" in prod_rows.columns else "North"
+            
+            base_input = pd.DataFrame([{
+                "Price": baseline_price,
+                "Inventory Level": inventory,
+                "Year": 2023,
+                "Month": 6,
+                "DayOfWeek": 2,
+                "Category": category,
+                "Region": region,
+                "Product ID": prod_id,
+                "Store ID": store_id
+            }])
+            prop_input = pd.DataFrame([{
+                "Price": proposed_price,
+                "Inventory Level": inventory,
+                "Year": 2023,
+                "Month": 6,
+                "DayOfWeek": 2,
+                "Category": category,
+                "Region": region,
+                "Product ID": prod_id,
+                "Store ID": store_id
+            }])
+
+            ml_pred_base = float(round(baseline_model.predict(base_input)[0], 2))
+            ml_pred_prop = float(round(baseline_model.predict(prop_input)[0], 2))
+            ml_delta = float(round(ml_pred_prop - ml_pred_base, 2))
+            ml_delta_pct = round((ml_delta / ml_pred_base * 100), 2) if ml_pred_base > 0 else 0.0
+
+            pipeline_eval = {
+                "model_available": True,
+                "model_architecture": "RandomForestRegressor Pipeline (Day 5 Baseline)",
+                "ml_baseline_demand": ml_pred_base,
+                "ml_proposed_demand": ml_pred_prop,
+                "ml_demand_delta": ml_delta,
+                "ml_demand_change_pct": ml_delta_pct,
+                "ml_realized_sales": round(min(ml_pred_prop, inventory), 2),
+                "dml_vs_ml_explanation": (
+                    f"Supervised ML predicts a {ml_delta:+.1f} unit demand change ({ml_delta_pct:+.1f}%) "
+                    f"based on historical correlations E[Demand | Price, Controls]. "
+                    f"In contrast, Double Machine Learning isolates the orthogonal causal price effect "
+                    f"({demand_change_units:+.1f} units, θ = {theta:+.4f}), confirming that price sensitivity "
+                    f"is practically inelastic."
+                )
+            }
+        except Exception as e:
+            pipeline_eval = {
+                "model_available": False,
+                "error": str(e)
+            }
+
     # Multi-scenario grid (-15%, -10%, -5%, 0%, +5%, +10%, +15%)
     scenarios_grid = []
     pct_steps = [-0.15, -0.10, -0.05, 0.0, 0.05, 0.10, 0.15]
@@ -159,6 +218,7 @@ def run_simulation(req: SimulationRequest):
             "extrapolates": extrapolates
         },
         "profit_analysis": profit_data,
+        "model_pipeline_evaluation": pipeline_eval,
         "multi_scenario_grid": scenarios_grid,
         "disclaimer": "This simulator applies Double Machine Learning sensitivity combined with operational inventory caps (Sales = min(D, Inventory)). In the absence of COGS in the base dataset, top-line revenue is displayed. Higher prices do not guarantee higher profitability if unit procurement margins vary."
     }

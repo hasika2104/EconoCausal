@@ -217,49 +217,49 @@ export default function LandingPage({ onNavigate }) {
       </section>
 
       {/* Methodology Section */}
-      <section className="bg-slate-900 text-white rounded-2xl p-8 md:p-10 shadow-lg">
+      <section className="bg-white rounded-2xl border border-slate-200/90 p-8 md:p-10 shadow-xs">
         <div className="max-w-3xl mb-8">
-          <div className="text-xs font-semibold uppercase tracking-wider text-emerald-400 mb-1">
+          <div className="text-xs font-semibold uppercase tracking-wider text-emerald-700 mb-1">
             Econometric Foundation
           </div>
-          <h2 className="text-2xl md:text-3xl font-bold tracking-tight">
+          <h2 className="text-2xl md:text-3xl font-bold tracking-tight text-slate-900">
             Robinson's Partially Linear Double Machine Learning
           </h2>
-          <p className="text-sm text-slate-300 mt-2">
+          <p className="text-sm text-slate-600 mt-2">
             Formulation of the causal identification framework used in the EconoCausal production pipeline:
           </p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-xs">
-          <div className="bg-slate-800/80 p-5 rounded-xl border border-slate-700/80 space-y-2">
-            <div className="text-emerald-400 font-mono font-semibold text-sm">Step 1: Outcome Residualization</div>
-            <div className="font-mono bg-slate-950/70 p-2.5 rounded text-slate-200">
+          <div className="bg-emerald-50/50 p-5 rounded-xl border border-emerald-200/80 space-y-2.5">
+            <div className="text-emerald-900 font-bold text-sm">Step 1: Outcome Residualization</div>
+            <div className="font-mono bg-white border border-emerald-100 p-2.5 rounded text-emerald-950 font-semibold shadow-xs">
               Y = g(W) + U<br/>
               U = Y - E[Y | W]
             </div>
-            <p className="text-slate-400">
+            <p className="text-slate-600 leading-relaxed">
               Trains ExtraTreesRegressor on observed confounders W to predict sales Y, leaving residual demand U.
             </p>
           </div>
 
-          <div className="bg-slate-800/80 p-5 rounded-xl border border-slate-700/80 space-y-2">
-            <div className="text-emerald-400 font-mono font-semibold text-sm">Step 2: Treatment Residualization</div>
-            <div className="font-mono bg-slate-950/70 p-2.5 rounded text-slate-200">
+          <div className="bg-emerald-50/50 p-5 rounded-xl border border-emerald-200/80 space-y-2.5">
+            <div className="text-emerald-900 font-bold text-sm">Step 2: Treatment Residualization</div>
+            <div className="font-mono bg-white border border-emerald-100 p-2.5 rounded text-emerald-950 font-semibold shadow-xs">
               P = m(W) + V<br/>
               V = P - E[P | W]
             </div>
-            <p className="text-slate-400">
+            <p className="text-slate-600 leading-relaxed">
               Trains second regressor to predict pricing P from W, extracting exogenous price variation V.
             </p>
           </div>
 
-          <div className="bg-slate-800/80 p-5 rounded-xl border border-slate-700/80 space-y-2">
-            <div className="text-emerald-400 font-mono font-semibold text-sm">Step 3: Orthogonal Estimation</div>
-            <div className="font-mono bg-slate-950/70 p-2.5 rounded text-slate-200">
+          <div className="bg-emerald-50/50 p-5 rounded-xl border border-emerald-200/80 space-y-2.5">
+            <div className="text-emerald-900 font-bold text-sm">Step 3: Orthogonal Estimation</div>
+            <div className="font-mono bg-white border border-emerald-100 p-2.5 rounded text-emerald-950 font-semibold shadow-xs">
               U = θ · V + ε<br/>
               θ = Cov(V, U) / Var(V)
             </div>
-            <p className="text-slate-400">
+            <p className="text-slate-600 leading-relaxed">
               Regresses residual demand on residual price with 3-fold cross-fitting to obtain unbiased treatment effect θ.
             </p>
           </div>

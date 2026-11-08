@@ -39,9 +39,13 @@ export default function PriceSimulationPage() {
           setProducts(res.products);
           const first = res.products[0];
           setSelectedProductId(first.product_id);
-          setCurrentPrice(first.mean_price);
-          setProposedPrice(round2(first.mean_price * 1.05));
-          setInventoryLevel(first.mean_inventory);
+          const baseP = first.mean_price;
+          const propP = round2(first.mean_price * 1.05);
+          const inv = first.mean_inventory;
+          setCurrentPrice(baseP);
+          setProposedPrice(propP);
+          setInventoryLevel(inv);
+          runSimulationWithParams(first.product_id, baseP, propP, inv, costPerUnit, specification);
         }
       } catch (err) {
         console.error(err);
@@ -54,32 +58,17 @@ export default function PriceSimulationPage() {
 
   const round2 = (val) => Math.round(val * 100) / 100;
 
-  // When product dropdown changes
-  const handleProductChange = (prodId) => {
-    setSelectedProductId(prodId);
-    const prod = products.find(p => p.product_id === prodId);
-    if (prod) {
-      setCurrentPrice(prod.mean_price);
-      setProposedPrice(round2(prod.mean_price * 1.05));
-      setInventoryLevel(prod.mean_inventory);
-    }
-  };
-
-  const handlePresetScenario = (pct) => {
-    setProposedPrice(round2(currentPrice * (1 + pct)));
-  };
-
-  // Run simulation
-  const handleRunSimulation = async () => {
+  // Run simulation with explicit parameters to prevent stale closure state
+  const runSimulationWithParams = async (prodId, curPrice, propPrice, inv, cost, spec) => {
     setLoading(true);
     try {
       const payload = {
-        product_id: selectedProductId,
-        current_price: parseFloat(currentPrice),
-        proposed_price: parseFloat(proposedPrice),
-        inventory_level: parseFloat(inventoryLevel),
-        cost_per_unit: costPerUnit !== '' ? parseFloat(costPerUnit) : null,
-        specification: specification
+        product_id: prodId,
+        current_price: parseFloat(curPrice),
+        proposed_price: parseFloat(propPrice),
+        inventory_level: parseFloat(inv),
+        cost_per_unit: cost !== '' && cost !== null && !isNaN(parseFloat(cost)) ? parseFloat(cost) : null,
+        specification: spec
       };
       const res = await simulatePrice(payload);
       setSimulationResult(res);
@@ -90,12 +79,31 @@ export default function PriceSimulationPage() {
     }
   };
 
-  // Run initial simulation on product selection
-  useEffect(() => {
-    if (currentPrice && proposedPrice) {
-      handleRunSimulation();
+  // When product dropdown changes
+  const handleProductChange = (prodId) => {
+    setSelectedProductId(prodId);
+    const prod = products.find(p => p.product_id === prodId);
+    if (prod) {
+      const baseP = prod.mean_price;
+      const propP = round2(prod.mean_price * 1.05);
+      const inv = prod.mean_inventory;
+      setCurrentPrice(baseP);
+      setProposedPrice(propP);
+      setInventoryLevel(inv);
+      runSimulationWithParams(prodId, baseP, propP, inv, costPerUnit, specification);
     }
-  }, [selectedProductId, specification]);
+  };
+
+  const handlePresetScenario = (pct) => {
+    const newProp = round2(currentPrice * (1 + pct));
+    setProposedPrice(newProp);
+    runSimulationWithParams(selectedProductId, currentPrice, newProp, inventoryLevel, costPerUnit, specification);
+  };
+
+  // Run simulation from button
+  const handleRunSimulation = () => {
+    runSimulationWithParams(selectedProductId, currentPrice, proposedPrice, inventoryLevel, costPerUnit, specification);
+  };
 
   return (
     <div className="space-y-8 pb-12">
@@ -289,6 +297,74 @@ export default function PriceSimulationPage() {
               badgeType={simulationResult.simulation.revenue_change_dollars >= 0 ? 'success' : 'warning'}
             />
           </div>
+
+          {/* Model Pipeline Evaluation: Supervised ML vs Double Machine Learning (DML) */}
+          {simulationResult.model_pipeline_evaluation && simulationResult.model_pipeline_evaluation.model_available && (
+            <div className="bg-white rounded-xl border border-slate-200/90 p-5 shadow-xs space-y-3">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 pb-3">
+                <div className="flex items-center gap-2">
+                  <div className="w-7 h-7 rounded-lg bg-teal-50 border border-teal-200 flex items-center justify-center text-teal-700">
+                    <Sparkles className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <h4 className="text-xs font-bold text-slate-800 uppercase tracking-wider">
+                      Model Pipeline Benchmark: Supervised ML vs. Causal DML
+                    </h4>
+                    <p className="text-[11px] text-slate-500">
+                      Comparing Day 5 RandomForestRegressor demand prediction against Day 10 DML orthogonalized causal estimate
+                    </p>
+                  </div>
+                </div>
+                <span className="text-[11px] font-semibold px-2 py-0.5 rounded bg-teal-50 text-teal-800 border border-teal-200 self-start sm:self-auto">
+                  Trained Pipeline Active
+                </span>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+                {/* Supervised ML Forecast */}
+                <div className="p-3.5 rounded-lg bg-slate-50 border border-slate-200 space-y-1.5">
+                  <div className="flex items-center justify-between">
+                    <span className="font-semibold text-slate-700">1. Supervised Random Forest Forecast</span>
+                    <span className="text-[10px] px-1.5 py-0.2 rounded bg-slate-200 text-slate-700 font-mono">E[Y | P, X]</span>
+                  </div>
+                  <div className="flex items-baseline gap-2 font-mono">
+                    <span className="text-lg font-bold text-slate-900">
+                      {simulationResult.model_pipeline_evaluation.ml_proposed_demand.toFixed(1)} u/d
+                    </span>
+                    <span className={`text-xs font-medium ${simulationResult.model_pipeline_evaluation.ml_demand_delta >= 0 ? 'text-emerald-700' : 'text-slate-600'}`}>
+                      ({simulationResult.model_pipeline_evaluation.ml_demand_delta >= 0 ? '+' : ''}{simulationResult.model_pipeline_evaluation.ml_demand_delta.toFixed(1)} units, {simulationResult.model_pipeline_evaluation.ml_demand_change_pct >= 0 ? '+' : ''}{simulationResult.model_pipeline_evaluation.ml_demand_change_pct}%)
+                    </span>
+                  </div>
+                  <div className="text-[11px] text-slate-500 leading-snug">
+                    Standard ML prediction from Day 5 pipeline. Captures observational association; sensitive to joint inventory and store demand patterns.
+                  </div>
+                </div>
+
+                {/* Causal DML Sensitivity */}
+                <div className="p-3.5 rounded-lg bg-emerald-50/50 border border-emerald-200 space-y-1.5">
+                  <div className="flex items-center justify-between">
+                    <span className="font-semibold text-emerald-900">2. Causal DML Orthogonal Response</span>
+                    <span className="text-[10px] px-1.5 py-0.2 rounded bg-emerald-100 text-emerald-800 font-mono">θ = +0.0107</span>
+                  </div>
+                  <div className="flex items-baseline gap-2 font-mono">
+                    <span className="text-lg font-bold text-emerald-950">
+                      {simulationResult.simulation.predicted_demand.toFixed(1)} u/d
+                    </span>
+                    <span className={`text-xs font-medium ${simulationResult.simulation.demand_change_units >= 0 ? 'text-emerald-700' : 'text-slate-600'}`}>
+                      ({simulationResult.simulation.demand_change_units >= 0 ? '+' : ''}{simulationResult.simulation.demand_change_units.toFixed(1)} units, {simulationResult.simulation.demand_change_pct >= 0 ? '+' : ''}{simulationResult.simulation.demand_change_pct}%)
+                    </span>
+                  </div>
+                  <div className="text-[11px] text-slate-600 leading-snug">
+                    Orthogonalized causal estimate residualizing 7 confounders. Confirms demand is essentially inelastic (p = 0.490).
+                  </div>
+                </div>
+              </div>
+
+              <div className="p-2.5 rounded-lg bg-teal-50/40 border border-teal-100 text-[11px] text-teal-900 leading-relaxed">
+                <strong>Econometric Takeaway:</strong> {simulationResult.model_pipeline_evaluation.dml_vs_ml_explanation}
+              </div>
+            </div>
+          )}
 
           {/* Profit Section (Only if COGS provided) */}
           {simulationResult.profit_analysis ? (

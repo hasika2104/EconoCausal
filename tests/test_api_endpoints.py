@@ -3,6 +3,14 @@ End-to-end API test suite for EconoCausal FastAPI backend
 Verifies all 7 core functional endpoint groups and business logic.
 """
 
+from pathlib import Path
+import sys
+
+# Ensure project root is in sys.path
+BASE_DIR = Path(__file__).resolve().parent.parent
+if str(BASE_DIR) not in sys.path:
+    sys.path.insert(0, str(BASE_DIR))
+
 from starlette.testclient import TestClient
 from backend.main import app
 
@@ -45,6 +53,9 @@ def test_causal_analysis():
     assert data["spec1"]["theta_rounded"] == 0.0107
     assert data["spec2"]["theta_rounded"] == -0.0195
     assert len(data["robustness_specifications"]) == 18
+    assert "feature_analysis" in data
+    assert len(data["feature_analysis"]) == 9
+    assert data["feature_analysis"][0]["feature"] == "Inventory Level"
 
 def test_simulation_spec1():
     payload = {
@@ -61,6 +72,9 @@ def test_simulation_spec1():
     assert data["simulation"]["proposed_price"] == 60.64
     assert data["profit_analysis"] is not None
     assert len(data["multi_scenario_grid"]) == 7
+    assert "model_pipeline_evaluation" in data
+    assert data["model_pipeline_evaluation"]["model_available"] is True
+    assert data["model_pipeline_evaluation"]["ml_proposed_demand"] > 0
 
 def test_recommendations():
     res = client.get("/api/recommendations")

@@ -34,7 +34,7 @@ def get_dataset_preview(
 
     # Search filter across string columns
     if search:
-        mask = np.column_stack([filtered_df[col].astype(str).str.contains(search, case=False, na=False) for col in filtered_df.columns])
+        mask = np.column_stack([filtered_df[col].astype(str).str.contains(search, case=False, na=False, regex=False) for col in filtered_df.columns])
         filtered_df = filtered_df[mask.any(axis=1)]
 
     # Sorting
@@ -162,7 +162,7 @@ def export_dataset(
 
     filtered_df = df.copy()
     if search:
-        mask = np.column_stack([filtered_df[col].astype(str).str.contains(search, case=False, na=False) for col in filtered_df.columns])
+        mask = np.column_stack([filtered_df[col].astype(str).str.contains(search, case=False, na=False, regex=False) for col in filtered_df.columns])
         filtered_df = filtered_df[mask.any(axis=1)]
 
     csv_data = filtered_df.to_csv(index=False)

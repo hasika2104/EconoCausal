@@ -10,6 +10,7 @@ def get_causal_analysis():
     dml_results = data_service.get_dml_results()
     robustness_df = data_service.get_robustness_results()
     model_perf_df = data_service.get_model_performance()
+    feature_analysis_df = data_service.get_feature_analysis()
     retail_df = data_service.get_retail_data()
 
     avg_price = float(retail_df["Price"].mean()) if not retail_df.empty else 55.14
@@ -79,6 +80,20 @@ def get_causal_analysis():
                 "notes": str(row["notes"])
             })
 
+    # Day 16 Feature Permutation Diagnostics & Causal Role Distinction
+    features_list = []
+    if not feature_analysis_df.empty:
+        for _, row in feature_analysis_df.iterrows():
+            features_list.append({
+                "feature": str(row["feature"]),
+                "feature_type": str(row["feature_type"]),
+                "rf_mdi_importance": round(float(row["rf_mdi_importance"]), 4),
+                "rf_perm_importance_mean": round(float(row["rf_perm_importance_mean"]), 4),
+                "rf_perm_importance_std": round(float(row["rf_perm_importance_std"]), 4),
+                "predictive_rank": int(row["predictive_rank"]),
+                "causal_role_and_distinction": str(row["causal_role_and_distinction"])
+            })
+
     methodology = {
         "title": "Double Machine Learning (DML) / Orthogonalized Neyman Machine Learning",
         "formula_outcome": "Y = θ · Price + g(W) + U",
@@ -117,5 +132,6 @@ def get_causal_analysis():
             "is_significant": spec2["p_value"] < 0.05
         },
         "robustness_specifications": specs_list,
-        "predictive_benchmarks": benchmarks
+        "predictive_benchmarks": benchmarks,
+        "feature_analysis": features_list
     }

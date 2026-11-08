@@ -62,6 +62,26 @@ export default function RecommendationsPage({ onNavigate }) {
     );
   }
 
+  if (error) {
+    return (
+      <div className="p-6 bg-red-50 border border-red-200 rounded-xl text-red-700 flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <AlertTriangle className="w-5 h-5 shrink-0" />
+          <div>
+            <div className="font-semibold text-sm">Failed to load recommendations</div>
+            <div className="text-xs mt-0.5">{error}</div>
+          </div>
+        </div>
+        <button
+          onClick={loadRecs}
+          className="px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white rounded-lg text-xs font-medium shrink-0 ml-4"
+        >
+          Retry
+        </button>
+      </div>
+    );
+  }
+
   const { summary, items } = data || { summary: {}, items: [] };
 
   const getStrategyBadge = (strat) => {

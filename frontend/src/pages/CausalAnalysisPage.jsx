@@ -61,17 +61,31 @@ export default function CausalAnalysisPage() {
 
   if (error) {
     return (
-      <div className="p-6 bg-red-50 border border-red-200 rounded-xl text-red-700 flex items-center gap-3">
-        <AlertTriangle className="w-5 h-5" />
-        <div>
-          <div className="font-semibold text-sm">Failed to load causal analysis</div>
-          <div className="text-xs mt-0.5">{error}</div>
+      <div className="p-6 bg-red-50 border border-red-200 rounded-xl text-red-700 flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <AlertTriangle className="w-5 h-5 shrink-0" />
+          <div>
+            <div className="font-semibold text-sm">Failed to load causal analysis</div>
+            <div className="text-xs mt-0.5">{error}</div>
+          </div>
         </div>
       </div>
     );
   }
 
-  const { methodology, spec1, spec2, robustness_specifications, predictive_benchmarks } = causalData;
+  if (!causalData || !causalData.spec1) {
+    return (
+      <div className="p-8 bg-white border border-slate-200 rounded-xl text-center space-y-4 shadow-xs">
+        <AlertTriangle className="w-8 h-8 text-amber-500 mx-auto" />
+        <div className="text-slate-800 font-bold text-base">Causal Inference Engine Initializing...</div>
+        <p className="text-xs text-slate-500 max-w-md mx-auto">
+          Loading 18-specification Double Machine Learning econometric estimates.
+        </p>
+      </div>
+    );
+  }
+
+  const { methodology, spec1, spec2, robustness_specifications, predictive_benchmarks, feature_analysis } = causalData;
 
   // Filter robustness specs
   const filteredSpecs = selectedGroup === 'All'
@@ -330,6 +344,66 @@ export default function CausalAnalysisPage() {
           ))}
         </div>
       </div>
+
+      {/* Day 16 Feature Diagnostics: Predictive Importance vs Causal Lever */}
+      {feature_analysis && feature_analysis.length > 0 && (
+        <div className="bg-white rounded-xl border border-slate-200/80 shadow-xs p-6 space-y-4">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-2 border-b border-slate-100 pb-3">
+            <div>
+              <h3 className="text-sm font-bold text-slate-800">
+                Predictive Importance vs. Causal Policy Levers (Day 16 Permutation Audit)
+              </h3>
+              <p className="text-xs text-slate-500 mt-0.5">
+                Held-out test R² permutation drop reveals high prediction accuracy does NOT equal actionable causal intervention.
+              </p>
+            </div>
+            <span className="text-xs px-2.5 py-1 bg-emerald-50 text-emerald-800 font-semibold rounded-full border border-emerald-200 self-start md:self-auto">
+              Econometric Audit
+            </span>
+          </div>
+
+          <div className="overflow-x-auto">
+            <table className="w-full text-xs text-left">
+              <thead className="bg-slate-50 text-slate-500 uppercase text-[10px] border-b border-slate-100">
+                <tr>
+                  <th className="py-2.5 px-3">Rank</th>
+                  <th className="py-2.5 px-3">Feature</th>
+                  <th className="py-2.5 px-3">Type</th>
+                  <th className="py-2.5 px-3 text-right">MDI Importance</th>
+                  <th className="py-2.5 px-3 text-right">Permutation Drop (R²)</th>
+                  <th className="py-2.5 px-4">Causal Role & Policy Distinction</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100 text-slate-700">
+                {feature_analysis.map((item) => {
+                  const isLever = item.feature === 'Price';
+                  const isCollider = item.feature === 'Inventory Level';
+                  return (
+                    <tr key={item.feature} className={`hover:bg-slate-50 ${isLever ? 'bg-emerald-50/40 font-medium' : isCollider ? 'bg-amber-50/30' : ''}`}>
+                      <td className="py-2.5 px-3 font-mono font-bold text-slate-500">#{item.predictive_rank}</td>
+                      <td className="py-2.5 px-3 font-semibold text-slate-900 flex items-center gap-1.5">
+                        {item.feature}
+                        {isLever && <span className="text-[10px] px-1.5 py-0.2 rounded bg-emerald-100 text-emerald-800 font-semibold">Causal Lever</span>}
+                        {isCollider && <span className="text-[10px] px-1.5 py-0.2 rounded bg-amber-100 text-amber-800 font-semibold">Capacity Proxy</span>}
+                      </td>
+                      <td className="py-2.5 px-3 text-slate-500">{item.feature_type}</td>
+                      <td className="py-2.5 px-3 text-right font-mono">{(item.rf_mdi_importance * 100).toFixed(1)}%</td>
+                      <td className="py-2.5 px-3 text-right font-mono font-bold">
+                        <span className={item.rf_perm_importance_mean > 0.05 ? 'text-amber-700' : 'text-slate-600'}>
+                          {item.rf_perm_importance_mean.toFixed(4)}
+                        </span>
+                      </td>
+                      <td className="py-2.5 px-4 text-slate-600 leading-snug">
+                        {item.causal_role_and_distinction}
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
 
       {/* Critical Limitations Callout */}
       <div className="p-5 rounded-xl border border-amber-200 bg-amber-50/70 text-xs text-amber-900 space-y-2">

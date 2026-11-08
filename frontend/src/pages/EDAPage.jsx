@@ -60,12 +60,38 @@ export default function EDAPage() {
 
   if (error) {
     return (
-      <div className="p-6 bg-red-50 border border-red-200 rounded-xl text-red-700 flex items-center gap-3">
-        <AlertCircle className="w-5 h-5" />
-        <div>
-          <div className="font-semibold text-sm">Failed to load EDA data</div>
-          <div className="text-xs mt-0.5">{error}</div>
+      <div className="p-6 bg-red-50 border border-red-200 rounded-xl text-red-700 flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <AlertCircle className="w-5 h-5 shrink-0" />
+          <div>
+            <div className="font-semibold text-sm">Failed to load EDA data</div>
+            <div className="text-xs mt-0.5">{error}</div>
+          </div>
         </div>
+        <button
+          onClick={loadEDA}
+          className="px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white rounded-lg text-xs font-medium shrink-0 ml-4"
+        >
+          Retry
+        </button>
+      </div>
+    );
+  }
+
+  if (!edaData || !edaData.dataset_metrics) {
+    return (
+      <div className="p-8 bg-white border border-slate-200 rounded-xl text-center space-y-4 shadow-xs">
+        <AlertCircle className="w-8 h-8 text-amber-500 mx-auto" />
+        <div className="text-slate-800 font-bold text-base">EDA Analytical Data Connecting...</div>
+        <p className="text-xs text-slate-500 max-w-md mx-auto">
+          Synthesizing exploratory data analysis from 73,100 retail transaction records.
+        </p>
+        <button
+          onClick={loadEDA}
+          className="px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white rounded-lg text-xs font-semibold shadow-xs"
+        >
+          Refresh EDA
+        </button>
       </div>
     );
   }
