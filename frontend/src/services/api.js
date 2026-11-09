@@ -89,3 +89,55 @@ export async function uploadDataset(file) {
   }
   return res.json();
 }
+
+export async function mapDatasetColumns(uploadId, mappings) {
+  const res = await fetch(`${API_BASE}/dataset/map-columns`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ upload_id: uploadId, column_mappings: mappings }),
+  });
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => ({}));
+    throw new Error(errorData.detail || 'Column mapping failed');
+  }
+  return res.json();
+}
+
+export async function validateDataset(datasetType = 'default') {
+  const res = await fetch(`${API_BASE}/dataset/validate?dataset_type=${encodeURIComponent(datasetType)}`);
+  if (!res.ok) throw new Error('Failed to validate dataset');
+  return res.json();
+}
+
+export function getExportCleanedUrl(datasetType = 'default', dropDuplicates = true, fillMissing = true, format = 'csv') {
+  return `${API_BASE}/dataset/export-cleaned?dataset_type=${encodeURIComponent(datasetType)}&drop_duplicates=${dropDuplicates}&fill_missing=${fillMissing}&format=${format}`;
+}
+
+export function getExportDatasetUrl(datasetType = 'default') {
+  return `${API_BASE}/dataset/export?dataset_type=${encodeURIComponent(datasetType)}`;
+}
+
+export async function sendChatMessage(message, history = [], productId = null, datasetType = 'default') {
+  const res = await fetch(`${API_BASE}/chat`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      message,
+      history,
+      product_id: productId,
+      dataset_type: datasetType,
+    }),
+  });
+  if (!res.ok) throw new Error('Failed to get answer from AI Assistant');
+  return res.json();
+}
+
+export async function fetchReportSummary() {
+  const res = await fetch(`${API_BASE}/reports/summary`);
+  if (!res.ok) throw new Error('Failed to fetch report summary');
+  return res.json();
+}
+
+export function getReportExportUrl(format = 'excel') {
+  return `${API_BASE}/reports/export?format=${format}`;
+}

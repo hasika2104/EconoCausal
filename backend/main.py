@@ -9,6 +9,8 @@ from backend.routes.simulation import router as simulation_router
 from backend.routes.recommendations import router as recommendations_router
 from backend.routes.products import router as products_router
 from backend.routes.dataset import router as dataset_router
+from backend.routes.chat import router as chat_router
+from backend.routes.reports import router as reports_router
 
 app = FastAPI(
     title="EconoCausal API",
@@ -41,6 +43,8 @@ app.include_router(simulation_router)
 app.include_router(recommendations_router)
 app.include_router(products_router)
 app.include_router(dataset_router)
+app.include_router(chat_router)
+app.include_router(reports_router)
 
 @app.get("/api/health")
 def health_check():

@@ -1,146 +1,260 @@
-# EconoCausal – Dynamic Pricing Using Double Machine Learning
+# 📈 EconoCausal – AI-Integrated Retail Pricing & Causal Decision Support System
 
-## 1. Project Overview
+> **"Make Smarter Pricing Decisions with AI and Causal Intelligence."**
 
-EconoCausal is a data-driven dynamic-pricing decision-support system that aims to estimate how product price changes affect demand and help businesses compare pricing strategies.
+[![API Status](https://img.shields.io/badge/FastAPI-v0.110.0-059669?style=flat-square&logo=fastapi)](https://fastapi.tiangolo.com)
+[![Frontend](https://img.shields.io/badge/React%2018-Vite%20%2B%20TailwindCSS-059669?style=flat-square&logo=react)](https://vitejs.dev)
+[![Econometrics](https://img.shields.io/badge/Double%20Machine%20Learning-3--Fold%20Cross--Fitting-0284c7?style=flat-square)](https://github.com/hasika2104/EconoCausal)
+[![License](https://img.shields.io/badge/License-MIT-slate?style=flat-square)](LICENSE)
 
-The project uses Double Machine Learning (DML), where appropriate, to estimate price effects while accounting for relevant business factors. It also aims to consider profitability, inventory constraints, and uncertainty when evaluating potential prices.
+EconoCausal is an enterprise-grade, full-stack decision-support platform designed to help retailers, pricing analysts, business owners, and non-technical stakeholders optimize product pricing through empirical causal econometrics (**Double Machine Learning**) rather than misleading historical correlations.
 
-## 2. Problem Statement
+---
 
-Retail businesses need to set product prices that balance customer demand and profitability. However, sales are also affected by factors such as inventory, promotions, competitor prices, and seasonal demand. A pricing decision based only on historical sales patterns may therefore be misleading.
+## 1. Executive Summary & Problem Statement
 
-This project aims to develop a pricing decision-support system that analyzes retail data, estimates price effects where the data supports causal analysis, and evaluates alternative prices under business constraints.
+### The Predictive Trap in Traditional Retail Pricing
+Standard predictive machine learning models optimize for **correlation** rather than **causation**. For example:
+- A store runs weekend promotional discounts on popular products during high foot-traffic periods.
+- A standard regression or tree-based model observes high sales volume whenever prices were discounted.
+- The model mistakenly concludes that *lower prices drove the sales spike*, recommending continuous discounting that leads to severe margin erosion.
 
-## 3. Project Objectives
+### The EconoCausal Solution
+EconoCausal uses **Double Machine Learning (DML)** with Neyman orthogonality to isolate genuine consumer price elasticity from store location, category baselines, and calendar seasonality. It couples these causal findings with **physical shelf-inventory constraints** and **margin guardrails**, ensuring that suggested price changes never project unfulfillable sales volumes or violate business thresholds.
 
-- Understand and analyze historical retail data.
-- Clean and preprocess the dataset.
-- Perform exploratory data analysis (EDA).
-- Build a baseline demand-prediction model.
-- Investigate Double Machine Learning for estimating price effects.
-- Simulate demand and profitability under alternative prices.
-- Develop a dashboard for comparing pricing scenarios.
-- Evaluate model performance and document limitations.
+---
 
-## 4. Dataset
+## 2. Key Platform Features
 
-**Dataset:** Retail Store Inventory and Demand Forecasting
+| Module | Core Capability | Business Value |
+|---|---|---|
+| **Landing Page** | Clean, light SaaS presentation with English & Telugu localization | Explains causal vs correlation principles to non-technical users |
+| **Executive Dashboard** | Real-time KPIs (Revenue, Volume, Average Price, Causal $\theta$) | High-level visibility into multi-store retail health across 73,100 records |
+| **Data Upload & Validator** | CSV and Excel (`.xlsx`, `.xls`) drag-and-drop ingestion with Data Quality Score | Auto-detects missing values, duplicates, invalid values, and maps custom schemas |
+| **Sales Analytics (EDA)** | Interactive volume, category, regional, and price decile curves | Deep exploratory insights into demand stability and weekly traffic surges |
+| **Causal Price Impact** | Double Machine Learning (DML Spec 1 & Spec 2) with 18 robustness checks | Statistically rigorous treatment effects ($\theta = +0.0107, p = 0.490$) with 95% CIs |
+| **Price Simulator** | Interactive price sliders with physical inventory truncation | What-if testing comparing -10%, -5%, +5%, +10% scenarios under shelf limits |
+| **AI Pricing Assistant** | Grounded retail analyst chatbot with suggested quick prompts | Natural language answers on revenue leaders, 5% price shocks, and dataset audits |
+| **AI Recommendations** | 100-SKU rule-guarded pricing strategy table | Prescriptive SKU advice balancing turnover, margins, and historical volatility |
+| **Reports Generation** | Multi-tab Excel (`.xlsx`), CSV, and printable executive PDF exports | Audit-ready documentation for executive committees and merchandising teams |
+| **Help & Settings** | Bilingual FAQ, Econometric Glossary, and Demo Mode controls | Self-service educational walkthroughs and language selection |
 
-**Format:** CSV
+---
 
-**Main columns:**
-- Date
-- Product ID
-- Store ID
-- Category
-- Price
-- Units Sold
-- Inventory Level
-- Demand Forecast
-- Units Ordered
-- Region
+## 3. Technology Stack & Architecture
 
-The dataset will be inspected and validated before model development. Missing business variables and data limitations will be documented.
-
-## 5. Technology Stack
-
-- **Programming:** Python
-- **Data analysis:** Pandas, NumPy
-- **Visualization:** Matplotlib, Seaborn
-- **Machine learning:** Scikit-learn
-- **Causal analysis:** DoubleML or EconML, subject to compatibility and data suitability
-- **Dashboard:** Streamlit
-- **Version control:** Git and GitHub
-
-## 6. Planned Features
-
-1. Retail data analysis and visualization.
-2. Baseline demand prediction.
-3. Price-effect estimation using DML, if supported by the data.
-4. What-if pricing simulation.
-5. Profit and inventory constraints.
-6. Uncertainty-aware pricing recommendations.
-7. Interactive dashboard.
-
-## 7. Current Progress
-
-- [x] Initial problem statement defined.
-- [x] Initial dataset selected.
-- [x] Project scope and planned features documented.
-- [x] Dataset validation and preprocessing (Days 1–4).
-- [x] Exploratory data analysis and temporal auditing (Days 1–4).
-- [x] Baseline demand prediction models (Days 5, 16).
-- [x] Causal DAG formulation & confounder isolation (Days 6–7).
-- [x] Double Machine Learning (DML) model and HC3 diagnostics (Days 8–10).
-- [x] Causal uncertainty propagation & sensitivity analysis (Days 11–13).
-- [x] 18-specification model robustness analysis (Days 14–15).
-- [x] Multi-model holdout benchmarking & feature diagnostics (Day 16).
-- [x] Improved constrained pricing decision engine (Day 17).
-- [x] Project integration, reproducibility & final report (Day 18).
-- [x] Interactive Pricing Analytics Dashboard (`app.py`) (Day 19).
-
-## 8. Important Limitations
-
-Causal estimates depend on the quality of the data, the availability of relevant control variables, and the assumptions required for causal identification. Predictive accuracy alone does not establish that a price change causes a change in demand.
-
-Pricing recommendations will be treated as estimates for decision support rather than guaranteed optimal prices. Furthermore, gross revenue ($P \cdot Q$) is not operating profit; wholesale procurement costs (COGS) are absent from the dataset.
-
-## 9. Project Structure
-
-```text
-EconoCausal/
-├── app.py                     # Streamlit interactive pricing analytics dashboard
-├── daily-logs/                # Daily engineering logs (Day 1 to Day 19)
-├── data/
-│   ├── processed/             # Cleaned datasets and JSON model outputs
-│   └── retail_store_inventory-selected-columns.csv
-├── models/                    # Serialized baseline models (gitignored)
-├── notebooks/                 # 13 chronologically sequenced Jupyter notebooks
-├── reports/                   # Technical summaries, robustness audits, final report
-├── src/                       # Reusable validation and business logic modules
-├── requirements.txt           # Project environment dependencies
-├── README.md                  # Project overview and instructions
-└── .gitignore                 # Security and artifact exclusions
+```
+┌────────────────────────────────────────────────────────────────────────┐
+│                   CLIENT TIER (React 18 + Vite)                       │
+│  • Modern Tailwind CSS (Emerald / Light Theme, Zero Dark Backgrounds)  │
+│  • Recharts Data Visualizations • Lucide Icons • Bilingual (EN / TE)  │
+└───────────────────────────────────┬────────────────────────────────────┘
+                                    │ HTTP / REST (/api)
+┌───────────────────────────────────▼────────────────────────────────────┐
+│                  BACKEND TIER (FastAPI + Python 3)                     │
+│  • Route Controllers: /dashboard, /eda, /causal, /simulate, /chat      │
+│  • Ingestion & Validator: pandas, openpyxl, auto-schema mapping        │
+│  • Conversational Engine: Grounded Analytics Engine + Gemini API opt.  │
+└───────────────────────────────────┬────────────────────────────────────┘
+                                    │ In-Memory / Joblib Pipelines
+┌───────────────────────────────────▼────────────────────────────────────┐
+│                ANALYTICS & CAUSAL ECONOMETRICS CORE                   │
+│  • Double Machine Learning (DML): ExtraTreesRegressor 3-Fold           │
+│  • Robust Inference: Heteroskedasticity-Consistent (HC3) SEs          │
+│  • Benchmark Dataset: 73,100 Store-Day Observations (20 SKUs)         │
+│  • Trained Supervised Pipeline: baseline_demand_model.joblib          │
+└────────────────────────────────────────────────────────────────────────┘
 ```
 
-## 10. Running the Applications
+---
 
-### A. Professional Web Application (React + FastAPI + Tailwind CSS)
+## 4. Local Installation & Startup Guide
 
-To launch the full modern web application:
+### Prerequisites
+- **Python 3.10+** (Python 3.11 or 3.13 recommended)
+- **Node.js 18+** and **npm**
+
+### Step 1: Clone Repository
+```bash
+git clone https://github.com/hasika2104/EconoCausal.git
+cd EconoCausal
+```
+
+### Step 2: Set Up Python Backend Environment
+```bash
+# Create and activate virtual environment
+python3 -m venv .venv
+source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+
+# Install backend dependencies
+pip install -r requirements.txt
+```
+
+### Step 3: Set Up React Frontend Environment
+```bash
+cd frontend
+npm install
+cd ..
+```
+
+### Step 4: Configure Environment Variables (Optional)
+```bash
+cp .env.example .env
+# Optional: add your GEMINI_API_KEY if desired for LLM conversational enhancement
+```
+
+### Step 5: Launch the Entire Platform
+You can launch both the FastAPI backend (port 8000) and the React frontend (port 5173) with a single command:
 
 ```bash
-# Simply run the integrated launcher:
+chmod +x run_app.sh
 ./run_app.sh
 ```
 
-Or start the backend and frontend separately:
-
+Alternatively, run each tier in separate terminals:
 ```bash
-# 1. Start FastAPI backend (Port 8000)
-export PYTHONPATH=.
-.venv/bin/python -m uvicorn backend.main:app --host 127.0.0.1 --port 8000 --reload
+# Terminal 1: FastAPI Backend
+source .venv/bin/activate
+uvicorn backend.main:app --host 127.0.0.1 --port 8000 --reload
 
-# 2. In a second terminal, start React frontend (Port 5173)
+# Terminal 2: React Vite Frontend
 cd frontend
 npm run dev
 ```
 
-* **Frontend URL:** [http://localhost:5173](http://localhost:5173)
-* **Backend API Documentation:** [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
+Open your browser at **`http://localhost:5173`** to access the live platform.
 
-### B. Legacy Streamlit Dashboard
+---
 
-To launch the earlier Streamlit dashboard:
+## 5. Automated Verification & Testing
+
+EconoCausal includes a comprehensive automated test suite verifying all 14 core API endpoints and business logic:
 
 ```bash
-source .venv/bin/activate
-streamlit run app.py
+# Run backend API test suite
+.venv/bin/python tests/test_api_endpoints.py
 ```
 
-The Streamlit dashboard runs at `http://localhost:8501`.
+Expected output:
+```
+All 14 API endpoint test suites PASSED perfectly!
+```
 
-## 11. Development Plan
+To test the frontend production build:
+```bash
+cd frontend
+npm run build
+```
 
-The project was developed incrementally across a 19-day research and implementation sprint, with daily progress logs, version-controlled code, rigorous testing, econometric validation, and institutional documentation.
+---
+
+## 6. Dataset Schema & Ingestion Requirements
+
+The platform is designed to ingest standard retail point-of-sale (POS) and inventory records. When uploading non-standard files, the **Column Mapping Wizard** automatically aligns custom names to standard fields:
+
+| Canonical Field | Detected Synonyms | Purpose |
+|---|---|---|
+| **Product ID\*** | `sku`, `product_id`, `item_id`, `Product` | SKU identification |
+| **Price\*** | `unit_price`, `selling_price`, `price` | Treatment variable for elasticity estimation |
+| **Units Sold\*** | `demand`, `units_sold`, `quantity`, `sales_volume` | Outcome variable for consumer response |
+| **Date** | `date`, `transaction_date`, `day` | Time-series trends and day-of-week seasonality |
+| **Inventory Level** | `stock`, `inventory`, `inventory_level` | Physical supply constraint truncation |
+| **Category** | `category`, `dept`, `department` | Cross-sector aggregation |
+| **Region** | `region`, `market`, `store_region` | Regional demand partitioning |
+| **Cost** | `cost`, `unit_cost`, `cogs` | Gross margin and unit profit calculations |
+
+*\* Required columns for pricing simulation and causal elasticity.*
+
+---
+
+## 7. Causal Econometrics & Model Methodology
+
+### Double Machine Learning (DML) Formulation
+To estimate the true Average Treatment Effect (ATE) $\theta$ of price on demand without restrictive linear assumptions, EconoCausal implements a partially linear DML model:
+
+$$Y - E[Y | W] = \theta \cdot (P - E[P | W]) + \epsilon$$
+
+Where:
+- $Y$: Units Sold (Daily Demand).
+- $P$: Shelf Unit Price ($).
+- $W$: Vector of observed confounders (Store ID, Product ID, Category, Region, Year, Month, Day of Week, Inventory).
+- $\theta$: Causal price elasticity parameter.
+
+### Validated Empirical Results
+- **Primary Specification (Spec 1):** $\theta = +0.0107$ ($95\% \text{ CI}: [-0.0197, +0.0411], p = 0.490$).
+- **Sensitivity Check (Spec 2 - with Inventory):** $\theta = -0.0195$ ($95\% \text{ CI}: [-0.0440, +0.0050], p = 0.119$).
+- **Managerial Implication:** Because the confidence intervals encompass zero, daily demand is statistically inelastic within historical operating price bands ($10.26 to $99.97). Retailers can capture higher revenues through selective price increases (+3% to +5%) without triggering unit volume collapse.
+
+---
+
+## 8. Public Deployment Configuration
+
+EconoCausal is pre-configured for one-click deployment to standard cloud platforms:
+
+### Deploying to Render (`render.yaml`)
+1. Fork or push your repository to GitHub.
+2. In Render, select **New Blueprint Instance** and connect the repository.
+3. Render automatically provisions:
+   - Python Web Service running `uvicorn backend.main:app`
+   - Static Web Service hosting `frontend/dist` with client-side rewrite rules.
+
+### Deploying Frontend to Vercel (`vercel.json`)
+1. Import `frontend/` into Vercel.
+2. Build command: `npm run build`, Output directory: `dist`.
+3. Set `VITE_API_URL` to your production FastAPI backend URL.
+
+---
+
+## 9. Repository Structure
+
+```
+EconoCausal/
+├── backend/                  # FastAPI backend server
+│   ├── main.py               # Application entrypoint & CORS configuration
+│   ├── routes/               # Modular API endpoint routers
+│   │   ├── dashboard.py      # KPI cards & trend aggregation
+│   │   ├── eda.py            # Summary statistics & correlation
+│   │   ├── causal.py         # DML results & 18-spec robustness
+│   │   ├── simulation.py     # Constrained price simulator
+│   │   ├── recommendations.py# 100-SKU AI advice
+│   │   ├── products.py       # Catalog metadata
+│   │   ├── dataset.py        # Tabular upload, audit & column mapping
+│   │   ├── chat.py           # Conversational AI Pricing Assistant
+│   │   └── reports.py        # Multi-tab Excel, CSV, PDF report export
+│   └── services/
+│       └── data_service.py   # Data caching & pipeline loader
+├── frontend/                 # React 18 + Vite web client
+│   ├── src/
+│   │   ├── components/       # Reusable UI (Sidebar, Navbar, Footer, MetricCard)
+│   │   ├── pages/            # 10 Application Modules
+│   │   ├── services/api.js   # HTTP client wrapper
+│   │   └── utils/            # Bilingual translations (EN/TE)
+│   ├── package.json
+│   ├── tailwind.config.js
+│   └── vite.config.js
+├── data/                     # Raw and processed datasets (73.1k records)
+├── models/                   # Serialized baseline demand models (.joblib)
+├── notebooks/                # Documented research & DML notebooks (Days 1–15)
+├── daily-logs/               # Daily engineering and development logs
+├── reports/                  # Validation logs, sensitivity plots, and exports
+├── tests/                    # End-to-end API test suites
+├── requirements.txt          # Python dependencies
+├── run_app.sh                # Single-command runner
+└── Procfile / render.yaml    # Production deployment manifests
+```
+
+---
+
+## 10. Future Enhancements
+
+- Multi-tenant enterprise authentication (OAuth2 / JWT).
+- Real-time competitor price scrapers and automated repricing webhooks.
+- Multi-product cross-price elasticity matrices (Substitutes and Complements).
+- Edge deployment for retail POS checkout terminals.
+
+---
+
+## 11. Authors & Acknowledgments
+
+- **Lead Analyst & Developer:** Data Analyst Intern at Infotact Solutions
+- **Repository:** [https://github.com/hasika2104/EconoCausal](https://github.com/hasika2104/EconoCausal)

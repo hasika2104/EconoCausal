@@ -95,6 +95,42 @@ def test_dataset_preview():
     data = res.json()
     assert len(data["rows"]) == 10
     assert data["total_rows"] == 73100
+    assert "audit" in data
+    assert data["audit"]["quality_score"] > 80
+
+def test_dataset_validate():
+    res = client.get("/api/dataset/validate")
+    assert res.status_code == 200
+    data = res.json()
+    assert "quality_score" in data
+    assert data["total_rows"] == 73100
+    assert data["has_price"] is True
+    assert data["has_units"] is True
+
+def test_dataset_export_cleaned():
+    res = client.get("/api/dataset/export-cleaned?format=csv")
+    assert res.status_code == 200
+    assert "text/csv" in res.headers["content-type"]
+
+def test_chat_ai_assistant():
+    res = client.post("/api/chat", json={"message": "Which product has the highest demand?"})
+    assert res.status_code == 200
+    data = res.json()
+    assert data["status"] == "success"
+    assert "demand" in data["reply"].lower() or "product" in data["reply"].lower()
+
+def test_reports_summary():
+    res = client.get("/api/reports/summary")
+    assert res.status_code == 200
+    data = res.json()
+    assert "kpis" in data
+    assert "causal_dml" in data
+    assert data["kpis"]["product_count"] == 20
+
+def test_reports_export_excel():
+    res = client.get("/api/reports/export?format=excel")
+    assert res.status_code == 200
+    assert "sheet" in res.headers["content-type"]
 
 if __name__ == "__main__":
     test_health()
@@ -106,4 +142,9 @@ if __name__ == "__main__":
     test_recommendations()
     test_products()
     test_dataset_preview()
-    print("All 8 API endpoint test suites PASSED perfectly!")
+    test_dataset_validate()
+    test_dataset_export_cleaned()
+    test_chat_ai_assistant()
+    test_reports_summary()
+    test_reports_export_excel()
+    print("All 14 API endpoint test suites PASSED perfectly!")
